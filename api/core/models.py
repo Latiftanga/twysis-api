@@ -1,5 +1,50 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+
+def school_logo_file_path(instance, filename):
+    """Generate file path for new school logo"""
+    ext = filename.split('.')[-1]  # [-1] returns the last item from a list
+    filename = f'{instance.name}_{instance.id}.{ext}'
+
+    return os.path.join('uploads/school/', filename)
+
+
+class Programme(models.Model):
+    """Students programme object"""
+
+    name = models.CharField(max_length=255, unique=True)
+    short_name = models.CharField(max_length=10)
+    code = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class School(models.Model):
+    """School object"""
+    name = models.CharField(max_length=255, unique=True)
+    motto = models.CharField(max_length=255, blank=True)
+    code = models.CharField(max_length=20, blank=True)
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    region = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(max_length=255, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=255, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True)
+    programmes = models.ManyToManyField(
+        'Programme',
+        related_name='schools',
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -57,6 +102,13 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
+    school = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='users',
+        blank=True,
+        null=True
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
@@ -66,7 +118,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-
-    @property
-    def name(self):
-        return self.email

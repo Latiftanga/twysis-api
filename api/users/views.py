@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from users.serializers import UserSerializer, AuthTokenSerializer
-from users.permissions import AnonymousPermissionOnly
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -24,7 +23,7 @@ class CreateTokenAPIView(ObtainAuthToken):
 
 
 class CustomAuthToken(ObtainAuthToken):
-    permission_classes = [AnonymousPermissionOnly]
+    permission_classes = []
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
     def post(self, request, *args, **kwargs):
