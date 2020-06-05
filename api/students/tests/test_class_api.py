@@ -111,3 +111,33 @@ class PrivateClassAPITests(TestCase):
         self.assertEquals(res.status_code, status.HTTP_200_OK)
         self.assertEquals(len(res.data), 1)
         self.assertEquals(res.data[0]['programme_division'], clas.programme_division)
+
+    def test_create_class_success(self):
+        """Test creating class successful"""
+        p1 = get_sample_programme()
+        payload = {
+            'programme': p1.id,
+            'programme_division': 'H',
+            'year': 1,
+        }
+
+        res = self.client.post(CLASS_URL, payload)
+
+        exists = Class.objects.filter(
+            programme_division='H',
+            school=self.user.school
+        ).exists()
+
+        self.assertEquals(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(exists)
+
+    def test_create_class_invalid(self):
+        """Test creating an invalid class"""
+        payload = {
+            'programme': get_sample_programme(),
+            'programme_division': '',
+            'year': 2,
+        }
+        res = self.client.post(CLASS_URL, payload)
+
+        self.assertEquals(res.status_code, status.HTTP_400_BAD_REQUEST)
