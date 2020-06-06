@@ -3,6 +3,23 @@ from django.db import models
 from core.models import School, Programme
 
 
+class House(models.Model):
+    """Students house of affilation"""
+    name = models.CharField(max_length=255, unique=True)
+    school = models.ForeignKey(
+        School,
+        on_delete=models.CASCADE,
+        related_name='houses'
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=255, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Class(models.Model):
     """Students group object"""
 
@@ -20,7 +37,7 @@ class Class(models.Model):
         related_name='classes',
         on_delete=models.CASCADE
     )
-    programme_division = models.CharField(max_length=255)
+    programme_division = models.CharField(max_length=255, unique=True)
     year = models.IntegerField(choices=YEAR_IN_SCHOOL_CHOICES)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=255, blank=True)
@@ -36,7 +53,7 @@ class Class(models.Model):
 
     @property
     def name(self):
-        return f'{self.programme.short_name} {self.year} {self.programme_division}'
+        return f'{self.year}{self.programme_division}'
 
     def __str__(self):
         return self.name

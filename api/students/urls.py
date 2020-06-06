@@ -7,6 +7,7 @@ from students import views
 router = DefaultRouter()
 
 router.register('classes', views.ClassViewSets)
+router.register('houses', views.HouseViewSets)
 
 
 app_name = 'students'

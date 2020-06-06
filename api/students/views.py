@@ -1,27 +1,22 @@
-from rest_framework.viewsets import GenericViewSet, mixins
-from rest_framework.authentication import TokenAuthentication
+from students.models import Class, House
+from students.serializers import ClassSerializer, HouseSerializer
+from core.views import CreateRetrieveUpdateViewSet
 from rest_framework.permissions import IsAuthenticated
 
-from students.models import Class
-from students.serializers import ClassSerializer
+from core.permissions import IsStaff
 
 
-class ClassViewSets(mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    GenericViewSet):
+class ClassViewSets(CreateRetrieveUpdateViewSet):
     """Manage classes in the database """
 
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Class.objects.all()
+    permission_classes = (IsAuthenticated, IsStaff)
+    queryset = Class.objects.all().order_by('year')
     serializer_class = ClassSerializer
 
-    def get_queryset(self):
-        """Return classes for authenticated user school"""
-        return self.queryset.filter(school=self.request.user.school)
 
-    def perform_create(self, serializer):
-        serializer.save(
-            school=self.request.user.school,
-            created_by=self.request.user.email
-        )
+class HouseViewSets(CreateRetrieveUpdateViewSet):
+    """Manage houses in the database"""
+
+    permission_classes = (IsAuthenticated, IsStaff)
+    queryset = House.objects.all().order_by('name')
+    serializer_class = HouseSerializer

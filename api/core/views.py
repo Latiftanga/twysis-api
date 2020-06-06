@@ -28,4 +28,12 @@ class CreateRetrieveUpdateViewSet(
 
     def perform_create(self, serializer):
         """Create a new object"""
-        serializer.save(school=self.request.user.school)
+        serializer.save(
+            school=self.request.user.school,
+            created_by=self.request.user.email
+        )
+
+    def perform_update(self, serializer):
+        serializer.save(
+            updated_by=self.request.user.email
+        )

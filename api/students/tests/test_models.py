@@ -1,7 +1,8 @@
 from django.test import TestCase
 
-from students.models import Class
-from core.models import Programme
+from students.models import Class, House
+
+from students.tests.test_class_api import get_sample_programme, get_sample_school
 
 
 class ModelTest(TestCase):
@@ -9,10 +10,7 @@ class ModelTest(TestCase):
 
     def test_class_str(self):
         """Test the string representation of class object"""
-        programme = Programme.objects.create(
-            name='Agriculture',
-            short_name='Agric'
-        )
+        programme = get_sample_programme()
 
         clas = Class.objects.create(
             programme=programme,
@@ -21,3 +19,10 @@ class ModelTest(TestCase):
         )
 
         self.assertEquals(str(clas), clas.name)
+
+    def test_house_str(self):
+        """Test the string representation of house"""
+        school = get_sample_school()
+        house = House.objects.create(name='Masroor', school=school)
+
+        self.assertEqual(str(house), house.name)

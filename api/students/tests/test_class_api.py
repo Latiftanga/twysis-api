@@ -1,5 +1,3 @@
-import uuid
-
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -8,25 +6,24 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from students.models import Class
-from students.serializers import ClassSerializer
 from core.models import School, Programme
 
+from core.tests.faker import fake
 
 CLASS_URL = reverse('students:class-list')
 
 
 def get_sample_school():
-    name = str(uuid.uuid4())
     return School.objects.create(
-        name=name[:5],
-        address='some location',
-        city='Wa',
-        region='UW'
+        name=fake.name(),
+        address=fake.address(),
+        city=fake.city(),
+        region=fake.region()
     )
 
 
 def get_sample_programme():
-    name = str(uuid.uuid4())
+    name = fake.name()
     return Programme.objects.create(
         name=name,
         short_name=name[0:4]
@@ -50,63 +47,62 @@ class PrivateClassAPITests(TestCase):
     """Test the private availabe class API"""
 
     def setUp(self):
-        self.client = APIClient()
-        self.user = get_user_model().objects.create_staff(
+        self.client1 = APIClient()
+        self.client2 = APIClient()
+        self.staff = get_user_model().objects.create_staff(
             email='staff@twysolutions.com',
             password='staff@pass',
         )
+        self.teacher = get_user_model().objects.create_teacher(
+            email='teacher@twysolutions.com',
+            password='teacher@pass',
+        )
         school = get_sample_school()
-        self.user.school = school
-        self.client.force_authenticate(self.user)
+        self.staff.school = school
+        self.teacher.school = school
+        self.client1.force_authenticate(self.staff)
+        self.client2.force_authenticate(self.teacher)
 
-    def test_retrieve_classes(self):
-        """Test retrieving tags limited school"""
+    def test_retrieving_classes_by_user_not_admin(self):
+        """Test retrieving classes by other auth users who are not admin users"""
         programme1 = get_sample_programme()
+
         Class.objects.create(
             programme=programme1,
             programme_division='A',
             year=1,
-            school=self.user.school
+            school=self.teacher.school
         )
         Class.objects.create(
             programme=programme1,
             programme_division='B',
             year=1,
-            school=self.user.school
+            school=self.teacher.school
         )
 
-        res = self.client.get(CLASS_URL)
+        res = self.client2.get(CLASS_URL)
 
-        classes = Class.objects.all()
-        serializer = ClassSerializer(classes, many=True)
+        self.assertEquals(res.status_code, status.HTTP_403_FORBIDDEN)
 
-        self.assertEquals(res.status_code, status.HTTP_200_OK)
-        self.assertEquals(res.data, serializer.data)
+    def test_classes_limited_authenticated_admin_user(self):
+        """Test that classes retrieved are limited to authenticated staff user school"""
 
-    def test_classes_limited_authenticated_user_school(self):
-        """Test that classes retrieved are limited to authenticated user school"""
-        user2 = get_user_model().objects.create_staff(
-            email='staff2@twysolutions.com',
-            password='staff2@pass',
-        )
-        school2 = get_sample_school()
-        user2.school = school2
         programme1 = get_sample_programme()
         programme2 = get_sample_programme()
         clas = Class.objects.create(
             programme=programme1,
             programme_division='C',
             year=1,
-            school=self.user.school
+            school=self.staff.school
         )
         Class.objects.create(
             programme=programme2,
             programme_division='D',
             year=1,
-            school=user2.school
+            school=get_sample_school()
         )
 
-        res = self.client.get(CLASS_URL)
+        res = self.client1.get(CLASS_URL)
 
         self.assertEquals(res.status_code, status.HTTP_200_OK)
         self.assertEquals(len(res.data), 1)
@@ -121,11 +117,11 @@ class PrivateClassAPITests(TestCase):
             'year': 1,
         }
 
-        res = self.client.post(CLASS_URL, payload)
+        res = self.client1.post(CLASS_URL, payload)
 
         exists = Class.objects.filter(
             programme_division='H',
-            school=self.user.school
+            school=self.staff.school
         ).exists()
 
         self.assertEquals(res.status_code, status.HTTP_201_CREATED)
@@ -138,6 +134,6 @@ class PrivateClassAPITests(TestCase):
             'programme_division': '',
             'year': 2,
         }
-        res = self.client.post(CLASS_URL, payload)
+        res = self.client1.post(CLASS_URL, payload)
 
         self.assertEquals(res.status_code, status.HTTP_400_BAD_REQUEST)
