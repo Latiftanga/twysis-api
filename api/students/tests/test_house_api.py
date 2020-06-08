@@ -63,3 +63,22 @@ class PrivateHouseAPITests(TestCase):
         self.assertEquals(res.status_code, status.HTTP_200_OK)
         self.assertEquals(len(res.data), 1)
         self.assertEquals(res.data[0]['name'], house1.name)
+
+    def test_create_house_success(self):
+        """Creating a new by admin successful"""
+        payload = {'name': 'Masroor'}
+
+        res = self.client1.post(HOUSE_URL, payload)
+
+        exists = House.objects.filter(name=payload['name']).exists()
+
+        self.assertEquals(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(exists)
+
+    def test_create_house_invalid(self):
+        """"Creating an invalid house by admin"""
+        payload = {'name': ''}
+
+        res = self.client1.post(HOUSE_URL, payload)
+
+        self.assertEquals(res.status_code, status.HTTP_400_BAD_REQUEST)

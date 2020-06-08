@@ -8,7 +8,8 @@ router = DefaultRouter()
 
 router.register('classes', views.ClassViewSets)
 router.register('houses', views.HouseViewSets)
-
+router.register('guardians', views.GuardianViewSets)
+router.register('students', views.StudentViewSets)
 
 app_name = 'students'
 
