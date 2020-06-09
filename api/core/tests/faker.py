@@ -26,5 +26,24 @@ class CoreProvider(BaseProvider):
         statuses = ['Boarding', 'Day']
         return random.choice(statuses)
 
+    def year(self):
+        years = [1, 2, 3]
+        return random.choice(years)
+
+    def programme_division(self):
+        divisions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+        return random.choice(divisions)
+
+    def programme(self):
+        programmes = [
+            'Agricultural Science',
+            'Business',
+            'General Arts',
+            'General Science',
+            'Home Economics',
+            'Visual Arts'
+        ]
+        return random.choice(programmes)
+
 
 fake.add_provider(CoreProvider)

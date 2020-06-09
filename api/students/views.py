@@ -36,3 +36,9 @@ class StudentViewSets(CreateRetrieveUpdateViewSet):
     permission_classes = (IsAuthenticated, IsStaff)
     queryset = Student.objects.all()
     serializer_class = serializers.StudentSerializer
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class"""
+        if self.action == 'retrieve':
+            return serializers.StudentDetailSerializer
+        return self.serializer_class

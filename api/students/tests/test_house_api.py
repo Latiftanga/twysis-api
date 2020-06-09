@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from students.models import House
-from students.tests.test_class_api import get_sample_school
+from students.tests.sample_objects import get_school
 from core.tests.faker import fake
 
 HOUSE_URL = reverse('students:house-list')
@@ -37,8 +37,8 @@ class PrivateHouseAPITests(TestCase):
             email='teacher@twysolutions.com',
             password='teacher@password'
         )
-        self.staff.school = get_sample_school()
-        self.teacher.school = get_sample_school()
+        self.staff.school = get_school()
+        self.teacher.school = get_school()
         self.client1.force_authenticate(self.staff)
         self.client2.force_authenticate(self.teacher)
 
@@ -54,7 +54,7 @@ class PrivateHouseAPITests(TestCase):
 
     def test_retrieve_houses_school_admin(self):
         """Test retrieving houses for the authenticated user(admin) school"""
-        school2 = get_sample_school()
+        school2 = get_school()
         house1 = House.objects.create(name=fake.name(), school=self.staff.school)
         House.objects.create(name=fake.name(), school=school2)
 

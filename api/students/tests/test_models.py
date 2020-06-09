@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from students.models import Class, House, Guardian, Student
-from students.tests.test_class_api import get_sample_programme, get_sample_school
+from students.models import Class, House, Guardian
+from students.tests import sample_objects
 from core.tests.faker import fake
 
 
@@ -10,7 +10,7 @@ class ModelTest(TestCase):
 
     def test_class_str(self):
         """Test the string representation of class object"""
-        programme = get_sample_programme()
+        programme = sample_objects.get_programme()
 
         clas = Class.objects.create(
             programme=programme,
@@ -22,7 +22,7 @@ class ModelTest(TestCase):
 
     def test_house_str(self):
         """Test the string representation of house"""
-        school = get_sample_school()
+        school = sample_objects.get_school()
         house = House.objects.create(name='Masroor', school=school)
 
         self.assertEqual(str(house), house.name)
@@ -31,27 +31,17 @@ class ModelTest(TestCase):
         """Test the string representation of student guardian"""
         guardian = Guardian.objects.create(
             name=fake.name(),
-            relation=fake.guardian_relation(),
             address=fake.address(),
+            relation=fake.guardian_relation(),
             phone='0200000000',
-            email=fake.email(),
-            school=get_sample_school()
+            email=fake.email,
+            school=sample_objects.get_school()
         )
 
         self.assertEquals(str(guardian), guardian.name)
 
     def test_student_str(self):
         """Test string representation of student object"""
-        student = Student.objects.create(
-            first_name=fake.name(),
-            other_names=fake.name(),
-            sex='M',
-            status='Boarding',
-            date_of_birth=fake.date(),
-            place_of_birth=fake.city(),
-            residential_address=fake.address(),
-            hometown=fake.city(),
-            nationality='Ghanaian'
-        )
+        student = sample_objects.get_student(sample_objects.get_school())
 
         self.assertEquals(str(student), student.name)

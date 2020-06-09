@@ -35,6 +35,12 @@ class StudentSerializer(serializers.ModelSerializer):
         many=True,
         queryset=models.Guardian.objects.all()
     )
+    house = serializers.PrimaryKeyRelatedField(
+        queryset=models.House.objects.all()
+    )
+    clas = serializers.PrimaryKeyRelatedField(
+        queryset=models.Class.objects.all()
+    )
 
     class Meta:
         model = models.Student
@@ -56,3 +62,10 @@ class StudentSerializer(serializers.ModelSerializer):
             'guardians'
         )
         read_only_fields = ('id',)
+
+
+class StudentDetailSerializer(StudentSerializer):
+    """Student detail serializer"""
+    clas = ClassSerializer(read_only=True)
+    house = HouseSerializer(read_only=True)
+    guardians = GuardianSerializer(many=True, read_only=True)

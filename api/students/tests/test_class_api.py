@@ -5,29 +5,11 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from students.tests import sample_objects
 from students.models import Class
-from core.models import School, Programme
 
-from core.tests.faker import fake
 
 CLASS_URL = reverse('students:class-list')
-
-
-def get_sample_school():
-    return School.objects.create(
-        name=fake.name(),
-        address=fake.address(),
-        city=fake.city(),
-        region=fake.region()
-    )
-
-
-def get_sample_programme():
-    name = fake.name()
-    return Programme.objects.create(
-        name=name,
-        short_name=name[0:4]
-    )
 
 
 class PublicClassAPITest(TestCase):
@@ -57,7 +39,7 @@ class PrivateClassAPITests(TestCase):
             email='teacher@twysolutions.com',
             password='teacher@pass',
         )
-        school = get_sample_school()
+        school = sample_objects.get_school()
         self.staff.school = school
         self.teacher.school = school
         self.client1.force_authenticate(self.staff)
@@ -65,7 +47,7 @@ class PrivateClassAPITests(TestCase):
 
     def test_retrieving_classes_by_user_not_admin(self):
         """Test retrieving classes by other auth users who are not admin users"""
-        programme1 = get_sample_programme()
+        programme1 = sample_objects.get_programme()
 
         Class.objects.create(
             programme=programme1,
@@ -87,8 +69,8 @@ class PrivateClassAPITests(TestCase):
     def test_classes_limited_authenticated_admin_user(self):
         """Test that classes retrieved are limited to authenticated staff user school"""
 
-        programme1 = get_sample_programme()
-        programme2 = get_sample_programme()
+        programme1 = sample_objects.get_programme()
+        programme2 = sample_objects.get_programme()
         clas = Class.objects.create(
             programme=programme1,
             programme_division='C',
@@ -99,7 +81,7 @@ class PrivateClassAPITests(TestCase):
             programme=programme2,
             programme_division='D',
             year=1,
-            school=get_sample_school()
+            school=sample_objects.get_school()
         )
 
         res = self.client1.get(CLASS_URL)
@@ -110,7 +92,7 @@ class PrivateClassAPITests(TestCase):
 
     def test_create_class_success(self):
         """Test creating class successful"""
-        p1 = get_sample_programme()
+        p1 = sample_objects.get_programme()
         payload = {
             'programme': p1.id,
             'programme_division': 'H',
@@ -130,7 +112,7 @@ class PrivateClassAPITests(TestCase):
     def test_create_class_invalid(self):
         """Test creating an invalid class"""
         payload = {
-            'programme': get_sample_programme(),
+            'programme': sample_objects.get_programme(),
             'programme_division': '',
             'year': 2,
         }

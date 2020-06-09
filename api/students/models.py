@@ -107,8 +107,13 @@ class Student(models.Model):
     clas = models.ForeignKey(
         'Class',
         on_delete=models.CASCADE,
+        related_name='students',
         blank=True,
-        null=True,
+        null=True
+    )
+    school = models.ForeignKey(
+        School,
+        on_delete=models.CASCADE,
         related_name='students'
     )
     user = models.OneToOneField(
@@ -116,13 +121,6 @@ class Student(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True
-    )
-    school = models.ForeignKey(
-        School,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='students'
     )
     guardians = models.ManyToManyField(
         'Guardian',
