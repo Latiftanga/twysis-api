@@ -36,10 +36,12 @@ class StudentSerializer(serializers.ModelSerializer):
         queryset=models.Guardian.objects.all()
     )
     house = serializers.PrimaryKeyRelatedField(
-        queryset=models.House.objects.all()
+        queryset=models.House.objects.all(),
+        required=False
     )
     clas = serializers.PrimaryKeyRelatedField(
-        queryset=models.Class.objects.all()
+        queryset=models.Class.objects.all(),
+        required=False
     )
 
     class Meta:

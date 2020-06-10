@@ -37,12 +37,12 @@ def get_class(school):
     )
 
 
-def get_student(school, **params):
+def get_student(school):
     """create sample student """
     name = fake.name()
     return Student.objects.create(
         first_name=name.split(' ')[0],
-        other_names=name.split(' ')[0],
+        other_names=name.split(' ')[1],
         sex=fake.sex(),
         date_of_birth=fake.date(),
         place_of_birth=fake.city(),
@@ -52,19 +52,35 @@ def get_student(school, **params):
         nationality='Ghanaian',
         phone='0200000000',
         email=fake.email(),
-        school=school,
-        clas=get_class(school=school),
-        house=get_house(school=school)
+        school=school
     )
 
 
 def get_guardian(school):
     """create sample guardian """
     return Guardian.objects.create(
-        name=fake.name,
+        name=fake.name(),
         relation=fake.guardian_relation(),
         address=fake.address(),
         phone='0200000000',
         email=fake.email(),
         school=school
     )
+
+
+def get_student_dafault_payload(**params):
+    """Return sample student payload for only required fields"""
+    name = fake.name()
+    defaults = {
+        'first_name': name.split(' ')[0],
+        'other_names': name.split(' ')[1],
+        'sex': fake.sex(),
+        'status': fake.student_status(),
+        'date_of_birth': fake.date(),
+        'place_of_birth': fake.city(),
+        'hometown': fake.city(),
+        'residential_address': fake.address(),
+        'nationality': 'Ghanaian',
+    }
+    defaults.update(params)
+    return defaults
