@@ -33,14 +33,7 @@ class StudentSerializer(serializers.ModelSerializer):
     """Manage students form the database"""
     guardians = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=models.Guardian.objects.all()
-    )
-    house = serializers.PrimaryKeyRelatedField(
-        queryset=models.House.objects.all(),
-        required=False
-    )
-    clas = serializers.PrimaryKeyRelatedField(
-        queryset=models.Class.objects.all(),
+        queryset=models.Guardian.objects.all(),
         required=False
     )
 
@@ -61,7 +54,7 @@ class StudentSerializer(serializers.ModelSerializer):
             'email',
             'house',
             'clas',
-            'guardians'
+            'guardians',
         )
         read_only_fields = ('id',)
 

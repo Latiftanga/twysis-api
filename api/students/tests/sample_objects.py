@@ -1,3 +1,4 @@
+import uuid
 from core.tests.faker import fake
 
 from core.models import School, Programme
@@ -6,7 +7,7 @@ from students.models import Student, Guardian, House, Class
 
 def get_school():
     return School.objects.create(
-        name=fake.name(),
+        name=str(uuid.uuid4())[:9],
         address=fake.address(),
         city=fake.city(),
         region=fake.region()
@@ -14,16 +15,16 @@ def get_school():
 
 
 def get_programme():
-    name = fake.name()
+    name = str(uuid.uuid4())[:7]
     return Programme.objects.create(
         name=name,
-        short_name=name[0:4]
+        short_name=name[0:2]
     )
 
 
 def get_house(school):
     return House.objects.create(
-        name=fake.name(),
+        name=str(uuid.uuid4())[:4],
         school=school
     )
 
@@ -31,7 +32,7 @@ def get_house(school):
 def get_class(school):
     return Class.objects.create(
         programme=get_programme(),
-        programme_division=fake.name()[0],
+        programme_division=str(uuid.uuid4())[0],
         year=fake.year(),
         school=school
     )

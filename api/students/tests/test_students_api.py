@@ -76,7 +76,7 @@ class StudentAPITests(TestCase):
 
     def test_create_basic_student(self):
         """Test creating student only required fields"""
-        payload = sample_objects.get_dafault_payload()
+        payload = sample_objects.get_student_dafault_payload()
         res = self.client1.post(STUDENTS_URL, payload)
 
         self.assertEquals(res.status_code, status.HTTP_201_CREATED)

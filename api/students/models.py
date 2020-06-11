@@ -114,7 +114,9 @@ class Student(models.Model):
     school = models.ForeignKey(
         School,
         on_delete=models.CASCADE,
-        related_name='students'
+        related_name='students',
+        blank=True,
+        null=True
     )
     user = models.OneToOneField(
         get_user_model(),

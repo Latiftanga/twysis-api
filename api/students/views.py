@@ -31,7 +31,7 @@ class GuardianViewSets(CreateRetrieveUpdateViewSet):
 
 
 class StudentViewSets(CreateRetrieveUpdateViewSet):
-    """Manage students in the database"""
+    """Manage students CRUD in the database"""
 
     permission_classes = (IsAuthenticated, IsStaff)
     queryset = Student.objects.all()
