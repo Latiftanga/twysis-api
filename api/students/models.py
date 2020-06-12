@@ -1,7 +1,17 @@
+import os
+import uuid
 from django.db import models
 from django.contrib.auth import get_user_model
 
 from core.models import School, Programme
+
+
+def student_image_file_path(instance, filename):
+    """Generate file path for new recipe image"""
+    ext = filename.split('.')[-1]  # [-1] returns the last item from a list
+    filename = f'{uuid.uuid4()}.{ext}'
+
+    return os.path.join('uploads/students/', filename)
 
 
 class Guardian(models.Model):
@@ -115,8 +125,6 @@ class Student(models.Model):
         School,
         on_delete=models.CASCADE,
         related_name='students',
-        blank=True,
-        null=True
     )
     user = models.OneToOneField(
         get_user_model(),
@@ -128,6 +136,10 @@ class Student(models.Model):
         'Guardian',
         related_name='students',
         blank=True
+    )
+    image = models.ImageField(
+        blank=True,
+        upload_to=student_image_file_path
     )
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=255, blank=True)

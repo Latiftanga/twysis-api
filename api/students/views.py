@@ -1,12 +1,12 @@
 from students.models import Class, House, Guardian, Student
 from students import serializers
-from core.views import CreateRetrieveUpdateViewSet
+from core.views import ListCreateReadUpdateViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from core.permissions import IsStaff
 
 
-class ClassViewSets(CreateRetrieveUpdateViewSet):
+class ClassViewSets(ListCreateReadUpdateViewSet):
     """Manage classes in the database """
 
     permission_classes = (IsAuthenticated, IsStaff)
@@ -14,7 +14,7 @@ class ClassViewSets(CreateRetrieveUpdateViewSet):
     serializer_class = serializers.ClassSerializer
 
 
-class HouseViewSets(CreateRetrieveUpdateViewSet):
+class HouseViewSets(ListCreateReadUpdateViewSet):
     """Manage houses in the database"""
 
     permission_classes = (IsAuthenticated, IsStaff)
@@ -22,7 +22,7 @@ class HouseViewSets(CreateRetrieveUpdateViewSet):
     serializer_class = serializers.HouseSerializer
 
 
-class GuardianViewSets(CreateRetrieveUpdateViewSet):
+class GuardianViewSets(ListCreateReadUpdateViewSet):
     """Manage students Guardians in the database"""
 
     permission_classes = (IsAuthenticated, IsStaff)
@@ -30,7 +30,7 @@ class GuardianViewSets(CreateRetrieveUpdateViewSet):
     serializer_class = serializers.GuardianSerializer
 
 
-class StudentViewSets(CreateRetrieveUpdateViewSet):
+class StudentViewSets(ListCreateReadUpdateViewSet):
     """Manage students CRUD in the database"""
 
     permission_classes = (IsAuthenticated, IsStaff)

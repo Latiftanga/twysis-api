@@ -4,12 +4,12 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 
-class CreateRetrieveUpdateViewSet(
-    viewsets.GenericViewSet,
+class ListCreateReadUpdateViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    mixins.CreateModelMixin
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
 ):
 
     """
