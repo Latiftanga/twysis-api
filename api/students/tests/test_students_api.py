@@ -1,3 +1,8 @@
+import tempfile
+import os
+
+from PIL import Image
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -12,6 +17,11 @@ from students.tests import sample_objects
 
 
 STUDENTS_URL = reverse('students:student-list')
+
+
+def image_upload_url(student_id):
+    """Return URL for recipe image upload"""
+    return reverse('students:student-upload-image', args=[student_id])
 
 
 def detail_url(student_id):
@@ -76,7 +86,7 @@ class StudentAPITests(TestCase):
 
     def test_create_basic_student(self):
         """Test creating student only required fields"""
-        payload = sample_objects.get_student_dafault_payload()
+        payload = sample_objects.get_student_dafault_payload(school=self.staff.school)
         res = self.client1.post(STUDENTS_URL, payload)
 
         self.assertEquals(res.status_code, status.HTTP_201_CREATED)
@@ -105,3 +115,42 @@ class StudentAPITests(TestCase):
         self.assertEquals(guardians.count(), 2)
         self.assertIn(guardian1, guardians)
         self.assertIn(guardian2, guardians)
+
+
+class StudentImageUploadTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.staff = get_user_model().objects.create_staff(
+            'user@twysolution.com',
+            'testpassword'
+        )
+        self.client.force_authenticate(self.staff)
+        self.staff.school = sample_objects.get_school()
+        self.student = sample_objects.create_student(school=self.staff.school)
+
+    def tearDown(self):
+        self.student.image.delete()
+
+    def test_upload_image_to_student(self):
+        """Test uploading image to student"""
+        url = image_upload_url(self.student.id)
+
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
+            img = Image.new('RGB', (10, 10))
+            img.save(ntf, format='JPEG')
+            ntf.seek(0)  # to start reading the file from the begining
+            res = self.client.post(url, {'image': ntf}, format='multipart')
+
+        self.student.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.student.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image"""
+        url = image_upload_url(self.student.id)
+
+        res = self.client.post(url, {'image': 'notimage'}, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

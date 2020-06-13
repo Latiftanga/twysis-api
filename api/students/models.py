@@ -135,10 +135,11 @@ class Student(models.Model):
     guardians = models.ManyToManyField(
         'Guardian',
         related_name='students',
-        blank=True
+        blank=True,
     )
     image = models.ImageField(
         blank=True,
+        null=True,
         upload_to=student_image_file_path
     )
     created = models.DateTimeField(auto_now_add=True)
@@ -149,7 +150,7 @@ class Student(models.Model):
 
     @property
     def name(self):
-        return f'{self.other_names}{self.first_name}'
+        return f'{self.other_names} {self.first_name}'
 
     def __str__(self):
         return self.name

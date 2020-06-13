@@ -43,7 +43,7 @@ def get_student(school):
     name = fake.name()
     return Student.objects.create(
         first_name=name.split(' ')[0],
-        other_names=name.split(' ')[1],
+        other_names=name.split(' ')[-1],
         sex=fake.sex(),
         date_of_birth=fake.date(),
         place_of_birth=fake.city(),
@@ -85,3 +85,21 @@ def get_student_dafault_payload(**params):
     }
     defaults.update(params)
     return defaults
+
+
+def create_student(school, **params):
+    """Create a sample recipe and return it"""
+    defaults = {
+        'first_name': fake.name().split(' ')[0],
+        'other_names': fake.name().split(' ')[-1],
+        'sex': fake.sex(),
+        'status': fake.student_status(),
+        'date_of_birth': fake.date(),
+        'place_of_birth': fake.city(),
+        'hometown': fake.city(),
+        'residential_address': fake.address(),
+        'nationality': 'Ghanaian'
+    }
+    defaults.update(params)  # Overwrite or add addtional key/values
+
+    return Student.objects.create(school=school, **defaults)

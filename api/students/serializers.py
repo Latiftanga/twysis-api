@@ -64,3 +64,12 @@ class StudentDetailSerializer(StudentSerializer):
     clas = ClassSerializer(read_only=True)
     house = HouseSerializer(read_only=True)
     guardians = GuardianSerializer(many=True, read_only=True)
+
+
+class StudentImageSerializer(serializers.ModelSerializer):
+    """Student image serializer"""
+
+    class Meta:
+        model = models.Student
+        fields = ('id', 'image')
+        read_only_fields = ('id',)
