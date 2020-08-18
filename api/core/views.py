@@ -2,6 +2,9 @@
 from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from core.models import House, Class, Programme
+from core.permissions import IsStaff
+from core import serializers
 
 
 class ListCreateReadUpdateViewSet(
@@ -37,3 +40,24 @@ class ListCreateReadUpdateViewSet(
         serializer.save(
             updated_by=self.request.user.email
         )
+
+
+class ProgrammeViewSets(viewsets.ModelViewSet):
+    """Manage grades in the database"""
+    permission_classes = (IsStaff,)
+    queryset = Programme.objects.all()
+    serializer_class = serializers.ProgrammeSerializer
+
+
+class ClassViewSets(ListCreateReadUpdateViewSet):
+    """Manage classes in the database """
+    permission_classes = (IsStaff,)
+    queryset = Class.objects.all()
+    serializer_class = serializers.ClassSerializer
+
+
+class HouseViewSets(ListCreateReadUpdateViewSet):
+    """Manage houses in the database"""
+    permission_classes = (IsStaff,)
+    queryset = House.objects.all().order_by('name')
+    serializer_class = serializers.HouseSerializer

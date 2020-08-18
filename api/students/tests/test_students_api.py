@@ -11,6 +11,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from students.models import Student
+from core.models import Class, Grade
 from students.serializers import StudentSerializer, StudentDetailSerializer
 
 from students.tests import sample_objects
@@ -71,9 +72,15 @@ class StudentAPITests(TestCase):
         """Retrieving student detail object"""
         student = sample_objects.get_student(school=self.staff.school)
         guardian = sample_objects.get_guardian(self.staff.school)
-        clas = sample_objects.get_class(self.staff.school)
+        grade = Grade.objects.create(name='SHS 3', year=12)
+        grade_class = Class.objects.create(
+            division='P',
+            grade=grade,
+            programme=sample_objects.get_programme(),
+            school=self.staff.school
+        )
         house = sample_objects.get_house(self.staff.school)
-        student.clas = clas
+        student.grade_class = grade_class
         student.house = house
         student.guardians.add(guardian)
         student.save()
@@ -86,7 +93,9 @@ class StudentAPITests(TestCase):
 
     def test_create_basic_student(self):
         """Test creating student only required fields"""
-        payload = sample_objects.get_student_dafault_payload(school=self.staff.school)
+        payload = sample_objects.get_student_dafault_payload(
+            school=self.staff.school
+        )
         res = self.client1.post(STUDENTS_URL, payload)
 
         self.assertEquals(res.status_code, status.HTTP_201_CREATED)
@@ -98,11 +107,18 @@ class StudentAPITests(TestCase):
         """Test creating a student with guardians"""
         guardian1 = sample_objects.get_guardian(school=self.staff.school)
         guardian2 = sample_objects.get_guardian(school=self.staff.school)
-        clas = sample_objects.get_class(school=self.staff.school)
+        shs_2 = Grade.objects.create(name='SHS2', year=11)
+        programme = sample_objects.get_programme()
+        grade_class = Class.objects.create(
+            division='J',
+            grade=shs_2,
+            programme=programme,
+            school=self.staff.school
+        )
         house = sample_objects.get_house(school=self.staff.school)
 
         payload = sample_objects.get_student_dafault_payload(
-            clas=clas.id,
+            grade_class=grade_class.id,
             house=house.id,
             guardians=[guardian1.id, guardian2.id]
         )

@@ -7,15 +7,26 @@ fake = Faker()
 
 class CoreProvider(BaseProvider):
     def region(self):
-        regions = ['UW', 'UE', 'NR', 'BR', 'BE', 'AHAFO', 'AR', 'ER', 'WR', 'GR', 'SR', 'OTI', 'VR', 'CR', 'NER', 'WNR']
+        regions = [
+            'UW', 'UE', 'NR', 'BR', 'BE', 'AHAFO',
+            'AR', 'ER', 'WR', 'GR', 'SR', 'OTI', 'VR',
+            'CR', 'NER', 'WNR'
+        ]
         return random.choice(regions)
 
     def city(self):
-        cities = ['Wa', 'Nadowli', 'Kaleo', 'Jirapa', '', 'Tumu', 'Gwollu', 'Hamile', 'Sombo', 'Babile']
+        cities = [
+            'Wa', 'Nadowli', 'Kaleo',
+            'Jirapa', '', 'Tumu', 'Gwollu',
+            'Hamile', 'Sombo', 'Babile'
+        ]
         return random.choice(cities)
 
     def guardian_relation(self):
-        relations = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']
+        relations = [
+            'Father', 'Mother', 'Brother', 'Sister',
+            'Uncle', 'Aunt', 'Grandfather', 'Grandmother'
+        ]
         return random.choice(relations)
 
     def sex(self):
@@ -31,7 +42,10 @@ class CoreProvider(BaseProvider):
         return random.choice(years)
 
     def programme_division(self):
-        divisions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+        divisions = [
+            'A', 'B', 'C', 'D', 'E',
+            'F', 'G', 'H', 'I', 'J', 'K'
+        ]
         return random.choice(divisions)
 
     def programme(self):

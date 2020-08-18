@@ -11,7 +11,14 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {'fields': ('email', 'password', 'school')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_student', 'is_parent', 'is_teacher', 'is_staff', 'is_superuser')}),
+        (_('Permissions'), {'fields': (
+            'is_active',
+            'is_student',
+            'is_parent',
+            'is_teacher',
+            'is_staff',
+            'is_superuser'
+        )}),
         (_('Important dates'), {'fields': ('last_login',)})
     )
     add_fieldsets = (
@@ -22,6 +29,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
-admin.site.register(models.User, UserAdmin)
 admin.site.register(models.School)
+admin.site.register(models.Grade)
 admin.site.register(models.Programme)
+admin.site.register(models.User, UserAdmin)

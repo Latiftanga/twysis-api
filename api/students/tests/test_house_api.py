@@ -5,11 +5,11 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from students.models import House
+from core.models import House
 from students.tests.sample_objects import get_school
 from core.tests.faker import fake
 
-HOUSE_URL = reverse('students:house-list')
+HOUSE_URL = reverse('house-list')
 
 
 class PublicHouseAPITest(TestCase):
@@ -55,7 +55,10 @@ class PrivateHouseAPITests(TestCase):
     def test_retrieve_houses_school_admin(self):
         """Test retrieving houses for the authenticated user(admin) school"""
         school2 = get_school()
-        house1 = House.objects.create(name=fake.name(), school=self.staff.school)
+        house1 = House.objects.create(
+            name=fake.name(),
+            school=self.staff.school
+        )
         House.objects.create(name=fake.name(), school=school2)
 
         res = self.client1.get(HOUSE_URL)

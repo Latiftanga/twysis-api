@@ -2,28 +2,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
-from students.models import Class, House, Guardian, Student
+from students.models import Guardian, Student
 from students import serializers
 from core.views import ListCreateReadUpdateViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
 from core.permissions import IsStaff
-
-
-class ClassViewSets(ListCreateReadUpdateViewSet):
-    """Manage classes in the database """
-
-    permission_classes = (IsAuthenticated, IsStaff)
-    queryset = Class.objects.all().order_by('year')
-    serializer_class = serializers.ClassSerializer
-
-
-class HouseViewSets(ListCreateReadUpdateViewSet):
-    """Manage houses in the database"""
-
-    permission_classes = (IsAuthenticated, IsStaff)
-    queryset = House.objects.all().order_by('name')
-    serializer_class = serializers.HouseSerializer
 
 
 class GuardianViewSets(ListCreateReadUpdateViewSet):
@@ -32,6 +17,32 @@ class GuardianViewSets(ListCreateReadUpdateViewSet):
     permission_classes = (IsAuthenticated, IsStaff)
     queryset = Guardian.objects.all()
     serializer_class = serializers.GuardianSerializer
+
+
+class StudentGuardiansViewSets(ModelViewSet):
+    """Manage students Guardians in the database"""
+
+    permission_classes = (IsAuthenticated, IsStaff)
+    queryset = Guardian.objects.all()
+    serializer_class = serializers.GuardianSerializer
+
+    def get_queryset(self):
+        return Guardian.objects.filter(students__id=self.kwargs['_pk'])
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(pk=self.kwargs['_pk'])
+        if student:
+            guardian = serializer.save(
+                school=self.request.user.school,
+                created_by=self.request.user.email
+            )
+            student.guardians.add(guardian)
+            student.save()
+
+    def perform_update(self, serializer):
+        serializer.save(
+            updated_by=self.request.user.email
+        )
 
 
 class StudentViewSets(ListCreateReadUpdateViewSet):

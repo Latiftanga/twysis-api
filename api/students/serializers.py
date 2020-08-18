@@ -1,23 +1,6 @@
 from rest_framework import serializers
 from students import models
-
-
-class ClassSerializer(serializers.ModelSerializer):
-    """Class serializer model"""
-
-    class Meta:
-        model = models.Class
-        fields = ('id', 'name', 'programme', 'programme_division', 'year')
-        read_only_fields = ('id', 'name')
-
-
-class HouseSerializer(serializers.ModelSerializer):
-    """House serializer model"""
-
-    class Meta:
-        model = models.House
-        fields = ('id', 'name')
-        read_only_fields = ('id',)
+from core.serializers import HouseSerializer, ClassSerializer
 
 
 class GuardianSerializer(serializers.ModelSerializer):
@@ -41,10 +24,10 @@ class StudentSerializer(serializers.ModelSerializer):
         model = models.Student
         fields = (
             'id',
+            'admission_id',
             'first_name',
-            'other_names',
+            'last_name',
             'sex',
-            'status',
             'date_of_birth',
             'place_of_birth',
             'residential_address',
@@ -52,16 +35,23 @@ class StudentSerializer(serializers.ModelSerializer):
             'nationality',
             'phone',
             'email',
+            'status',
+            'grade_class',
             'house',
-            'clas',
             'guardians',
         )
-        read_only_fields = ('id',)
+        read_only_fields = (
+            'id',
+            'created',
+            'created_by',
+            'updated',
+            'updated_by'
+        )
 
 
 class StudentDetailSerializer(StudentSerializer):
     """Student detail serializer"""
-    clas = ClassSerializer(read_only=True)
+    grade_class = ClassSerializer(read_only=True)
     house = HouseSerializer(read_only=True)
     guardians = GuardianSerializer(many=True, read_only=True)
 

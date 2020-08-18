@@ -1,8 +1,8 @@
 import uuid
 from core.tests.faker import fake
 
-from core.models import School, Programme
-from students.models import Student, Guardian, House, Class
+from core.models import School, Programme, House
+from students.models import Student, Guardian
 
 
 def get_school():
@@ -18,7 +18,7 @@ def get_programme():
     name = str(uuid.uuid4())[:7]
     return Programme.objects.create(
         name=name,
-        short_name=name[0:2]
+        code=name[0:2]
     )
 
 
@@ -29,21 +29,13 @@ def get_house(school):
     )
 
 
-def get_class(school):
-    return Class.objects.create(
-        programme=get_programme(),
-        programme_division=str(uuid.uuid4())[0],
-        year=fake.year(),
-        school=school
-    )
-
-
 def get_student(school):
     """create sample student """
     name = fake.name()
     return Student.objects.create(
+        admission_id=fake.name(),
         first_name=name.split(' ')[0],
-        other_names=name.split(' ')[-1],
+        last_name=name.split(' ')[-1],
         sex=fake.sex(),
         date_of_birth=fake.date(),
         place_of_birth=fake.city(),
@@ -73,8 +65,9 @@ def get_student_dafault_payload(**params):
     """Return sample student payload for only required fields"""
     name = fake.name()
     defaults = {
+        'admission_id': fake.name(),
         'first_name': name.split(' ')[0],
-        'other_names': name.split(' ')[1],
+        'last_name': name.split(' ')[1],
         'sex': fake.sex(),
         'status': fake.student_status(),
         'date_of_birth': fake.date(),
@@ -90,8 +83,9 @@ def get_student_dafault_payload(**params):
 def create_student(school, **params):
     """Create a sample recipe and return it"""
     defaults = {
+        'admission_id': fake.name(),
         'first_name': fake.name().split(' ')[0],
-        'other_names': fake.name().split(' ')[-1],
+        'last_name': fake.name().split(' ')[-1],
         'sex': fake.sex(),
         'status': fake.student_status(),
         'date_of_birth': fake.date(),

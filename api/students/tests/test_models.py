@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from django.test import TestCase
 from students import models
+from core.models import Grade
 from students.tests import sample_objects
 from core.tests.faker import fake
 
@@ -11,11 +12,14 @@ class ModelTest(TestCase):
     def test_class_str(self):
         """Test the string representation of class object"""
         programme = sample_objects.get_programme()
+        grade = Grade.objects.create(name='SHS 2', year=11)
+        school = sample_objects.get_school()
 
         clas = models.Class.objects.create(
+            division='F',
             programme=programme,
-            programme_division='A',
-            year=1,
+            grade=grade,
+            school=school,
         )
 
         self.assertEquals(str(clas), clas.name)

@@ -1,6 +1,10 @@
 import os
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin
+)
 
 
 def school_logo_file_path(instance, filename):
@@ -11,20 +15,15 @@ def school_logo_file_path(instance, filename):
     return os.path.join('uploads/school/', filename)
 
 
-class Programme(models.Model):
-    """Students programme object"""
-
-    name = models.CharField(max_length=255, unique=True)
-    short_name = models.CharField(max_length=10)
-    code = models.CharField(max_length=255, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class School(models.Model):
     """School object"""
+    SCHOOL_LEVELS = (
+        ('PRIMARY', 'Primary'),
+        ('JHS', 'Junior High'),
+        ('SHS', 'Senior High')
+    )
     name = models.CharField(max_length=255, unique=True)
+    level = models.CharField(max_length=8, choices=SCHOOL_LEVELS)
     motto = models.CharField(max_length=255, blank=True)
     code = models.CharField(max_length=20, blank=True)
     address = models.CharField(max_length=255)
@@ -42,6 +41,87 @@ class School(models.Model):
         related_name='schools',
         blank=True,
     )
+
+    def __str__(self):
+        return self.name
+
+
+class Programme(models.Model):
+    """Students programme object"""
+
+    name = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Grade(models.Model):
+    """Students grade levels"""
+    YEAR_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+        (9, 9),
+        (10, 10),
+        (11, 11),
+        (12, 12)
+    )
+
+    name = models.CharField(max_length=16, unique=True)
+    year = models.PositiveSmallIntegerField(
+        primary_key=True,
+        choices=YEAR_CHOICES
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Class(models.Model):
+    """Student class"""
+    division = models.CharField(max_length=16)
+    grade = models.ForeignKey('Grade', on_delete=models.CASCADE)
+    programme = models.ForeignKey(
+        'Programme',
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    school = models.ForeignKey(
+        School,
+        on_delete=models.CASCADE,
+        related_name='classes',
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=32, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=32, blank=True)
+
+    @property
+    def name(self):
+        return f'{self.grade.name}{self.division}'
+
+    def __str__(self):
+        return self.name
+
+
+class House(models.Model):
+    """Students house of affilation"""
+    name = models.CharField(max_length=255, unique=True)
+    school = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='houses'
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=255, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.name
