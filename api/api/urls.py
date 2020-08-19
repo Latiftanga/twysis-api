@@ -26,6 +26,8 @@ router = DefaultRouter()
 router.register('programmes', views.ProgrammeViewSets)
 router.register('classes', views.ClassViewSets)
 router.register('houses', views.HouseViewSets)
+router.register('rooms', views.RoomViewSets)
+router.register('periods', views.PeriodViewSets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -105,6 +106,53 @@ class Class(models.Model):
     @property
     def name(self):
         return f'{self.grade.name}{self.division}'
+
+    def __str__(self):
+        return self.name
+
+
+class Room(models.Model):
+    """Classrooms"""
+    name = models.CharField(max_length=16, unique=True)
+    capacity = models.PositiveIntegerField(blank=True, null=True)
+    description = models.CharField(max_length=64, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=255, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True)
+    school = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='rooms'
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Period(models.Model):
+    """School periods"""
+    name = models.CharField(max_length=16, unique=True)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    use_for_attendance = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=255, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True)
+    school = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='peroids'
+    )
+
+    @property
+    def length(self):
+        FMT = '%H:%M:%S'
+        return (
+            datetime.strptime(str(self.end_time), FMT) -
+            datetime.strptime(str(self.start_time), FMT)
+        )/60
 
     def __str__(self):
         return self.name

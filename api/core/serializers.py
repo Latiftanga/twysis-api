@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from core.models import House, Class, Grade, Programme
+from core.models import (
+    House,
+    Class,
+    Grade,
+    Programme,
+    Room,
+    Period
+)
 
 
 class ProgrammeSerializer(serializers.ModelSerializer):
@@ -36,3 +43,19 @@ class ClassSerializer(serializers.ModelSerializer):
         model = Class
         fields = ('id', 'name', 'grade', 'programme')
         read_only_fields = ('id', )
+
+
+class RoomSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Room
+        fields = ('id', 'name', 'capacity', 'description')
+        read_only_fields = ('id',)
+
+
+class PeriodSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Period
+        fields = ('id', 'name', 'start_time', 'end_time', 'length')
+        read_only_fields = ('id', 'length')
